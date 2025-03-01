@@ -15,9 +15,9 @@ In particular, the centralized broker is used solely to create and retrieve Even
 > **note:** `BasicEventChannels` can be extended to implement more complex logic.
 
 ## How to use?
- #### 0~ Preparation
+ ### 0~ Preparation
  Place the `CallbacksHandler` MonoBehaviour somewhere in the scene.
- #### 1~ Channel Type Set Up
+ ### 1~ Channel Type Set Up
  Extend `BasicEventChannels` to customize the Event Channel based on your needs. <br> *example:*
     
 ```csharp 
@@ -41,7 +41,7 @@ public class EventWithBool : BasicEventChannel{
 }
 ```
 
-#### 3~ Channel Creation
+### 3~ Channel Creation
 This is the only phase when we need to invoke the centralized `EventBoker`, The current implementation provide multicast options: <br>
 - **AddEventChannel:** Simply create a new Event Channel for future usage. <br>
     Throw exception if the eventName is already registered. <br>
@@ -66,3 +66,25 @@ This is the only phase when we need to invoke the centralized `EventBoker`, The 
     );
     ```
 > **Note:** From a single channel type multiple events with different names can be created.<br>
+
+### 4~ Subscribe a callback
+If you already have the reference to the event, you can subscribe a callback directly. <br>
+*syntax:* `event.Subscribe(<Action>);` <br>
+*example:* 
+```csharp 
+eventWithBool.Subscribe(new Action(() =>
+{
+    EventCallback(eventWithBool.boolValue);
+    Debug.Log("trigger event callback of:" + this.GetHashCode());
+}));
+```
+Alternatively, you can still subscribe a callback through the `EventBroker` using the event name. <br>
+*syntax:* `EventBroker.SubsToEventChannel(<eventName>, <Action>);` <br>
+*example:* 
+```csharp 
+EventBroker.SubsToEventChannel("name", new Action(() =>
+{
+    EventCallback(eventWithBool.boolValue);
+    Debug.Log("trigger event callback of:" + this.GetHashCode());
+}));
+```
